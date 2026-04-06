@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stars and Stripes Staffing</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,sans-serif;background:#f5f5f5;color:#111;font-size:15px}
+a{color:inherit;text-decoration:none}
+
+nav{background:#fff;border-bottom:1px solid #e0e0e0;padding:0 1.5rem;display:flex;align-items:center;justify-content:space-between;height:56px;flex-wrap:wrap;gap:.5rem}
+.logo{font-weight:700;font-size:1.1rem;white-space:nowrap}
+.nav-tabs{display:flex;gap:.25rem;flex-wrap:wrap}
+.nav-tab{padding:6px 12px;border-radius:6px;font-size:13px;cursor:pointer;background:none;border:none;color:#555;font-family:inherit;white-space:nowrap}
+.nav-tab:hover{background:#f0f0f0;color:#111}
+.nav-tab.active{background:#111;color:#fff}
+.nav-tab.admin-tab{color:#7a4f00;border:1px solid #f5a623}
+.nav-tab.admin-tab.active{background:#f5a623;color:#7a4f00;border-color:#f5a623}
+
+.page{display:none}
+.page.active{display:block}
+.page-inner{max-width:900px;margin:0 auto;padding:2rem 1.5rem}
+
+/* HOME */
+.hero{background:#111;color:#fff;padding:4rem 1.5rem;text-align:center}
+.hero h1{font-size:clamp(1.6rem,4vw,2.4rem);font-weight:700;margin-bottom:.75rem;line-height:1.2}
+.hero h1 span{color:#f5a623}
+.hero p{color:#aaa;font-size:1rem;max-width:520px;margin:0 auto 2rem;line-height:1.7}
+.hero-btns{display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap}
+.how-section{max-width:900px;margin:0 auto;padding:3rem 1.5rem}
+.how-section h2{font-size:1.2rem;font-weight:700;margin-bottom:1.5rem;text-align:center}
+.how-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:1rem}
+.how-card{background:#fff;border:1px solid #e0e0e0;border-radius:10px;padding:1.25rem}
+.how-card .step{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#888;margin-bottom:.4rem}
+.how-card h3{font-size:.95rem;font-weight:700;margin-bottom:.4rem}
+.how-card p{font-size:13px;color:#666;line-height:1.5}
+.cta-strip{background:#fff;border-top:1px solid #e0e0e0;border-bottom:1px solid #e0e0e0;padding:2.5rem 1.5rem;text-align:center}
+.cta-strip h2{font-size:1.15rem;font-weight:700;margin-bottom:.5rem}
+.cta-strip p{font-size:14px;color:#666;margin-bottom:1.25rem}
+
+h1{font-size:1.4rem;font-weight:700;margin-bottom:.4rem}
+.sub{color:#666;font-size:14px;margin-bottom:1.5rem}
+.toolbar{display:flex;gap:.75rem;margin-bottom:1.25rem;flex-wrap:wrap;align-items:center}
+input[type=text],input[type=email],input[type=date],input[type=password],select,textarea{padding:8px 12px;border:1px solid #d0d0d0;border-radius:6px;font-size:14px;font-family:inherit;background:#fff;color:#111;width:100%}
+input:focus,select:focus,textarea:focus{outline:2px solid #111;outline-offset:1px}
+textarea{resize:vertical;min-height:80px}
+.toolbar input[type=text]{min-width:180px;flex:1}
+.toolbar select{width:auto;flex-shrink:0}
+.btn{padding:8px 16px;border-radius:6px;font-size:14px;cursor:pointer;border:1px solid #d0d0d0;background:#fff;color:#111;font-family:inherit;white-space:nowrap}
+.btn:hover{background:#f0f0f0}
+.btn-primary{background:#111;color:#fff;border-color:#111}
+.btn-primary:hover{background:#333}
+.btn-gold{background:#f5a623;color:#7a4f00;border-color:#f5a623}
+.btn-gold:hover{background:#e8931a}
+.btn-danger{background:#fff;color:#c00;border-color:#fecaca}
+.btn-danger:hover{background:#fff0f0}
+.btn-outline-white{background:transparent;color:#fff;border:1px solid #555}
+.btn-outline-white:hover{background:rgba(255,255,255,.1)}
+.btn-sm{padding:5px 11px;font-size:13px}
+
+.job-list{display:flex;flex-direction:column;gap:.75rem}
+.job-card{background:#fff;border:1px solid #e0e0e0;border-radius:10px;padding:1.1rem 1.25rem;display:flex;align-items:flex-start;gap:1rem}
+.job-card:hover{border-color:#aaa}
+.job-body{flex:1}
+.job-title{font-weight:600;font-size:1rem;margin-bottom:2px}
+.job-company{font-size:13px;color:#555;margin-bottom:.5rem}
+.job-tags{display:flex;gap:.4rem;flex-wrap:wrap}
+.tag{font-size:12px;padding:2px 9px;border-radius:20px;border:1px solid #d0d0d0;color:#444;background:#f9f9f9}
+.job-actions{display:flex;flex-direction:column;align-items:flex-end;gap:.4rem;flex-shrink:0}
+.deadline{font-size:12px;color:#777}
+.empty{text-align:center;padding:3rem;color:#888;font-size:14px}
+
+.featured-label{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:#7a4f00;margin-bottom:.6rem;display:flex;align-items:center;gap:.4rem}
+.featured-label::before{content:'';display:inline-block;width:8px;height:8px;background:#f5a623;border-radius:50%}
+.job-card.featured{border:2px solid #f5a623;background:#fffdf5}
+.job-card.featured:hover{border-color:#d4920a}
+.featured-badge{font-size:11px;font-weight:600;background:#f5a623;color:#7a4f00;padding:2px 8px;border-radius:20px;margin-left:.5rem;vertical-align:middle}
+.featured-divider{border:none;border-top:1px solid #e0e0e0;margin:1.25rem 0}
+
+.import-box{background:#fff;border:1px solid #e0e0e0;border-radius:10px;padding:1.5rem;margin-bottom:1.5rem}
+.import-box h2{font-size:1rem;font-weight:600;margin-bottom:.75rem}
+.file-drop{border:2px dashed #d0d0d0;border-radius:8px;padding:2rem;text-align:center;margin-bottom:1rem;cursor:pointer;color:#666;font-size:14px}
+.file-drop:hover{border-color:#999;background:#fafafa}
+.file-drop input{display:none}
+.csv-hint{font-size:12px;color:#888;margin-top:.5rem}
+.preview-table{width:100%;border-collapse:collapse;font-size:13px;margin-top:1rem;display:block;overflow-x:auto}
+.preview-table th{text-align:left;padding:6px 10px;border-bottom:2px solid #e0e0e0;color:#555;font-weight:600;white-space:nowrap}
+.preview-table td{padding:6px 10px;border-bottom:1px solid #f0f0f0;white-space:nowrap}
+.post-form{background:#fff;border:1px solid #e0e0e0;border-radius:10px;padding:1.5rem;max-width:600px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+.form-grid .full{grid-column:1/-1}
+.form-row{margin-bottom:1rem}
+.form-row label{display:block;font-size:13px;font-weight:500;margin-bottom:.3rem}
+.form-row .req{color:#c00;margin-left:2px}
+.error-msg{font-size:13px;color:#c00;margin-top:.5rem;display:none}
+.success-banner{background:#e8f5e9;border:1px solid #a5d6a7;border-radius:8px;padding:1rem;text-align:center;display:none;margin-top:1rem}
+.success-banner p{font-size:14px;color:#2e7d32}
+
+.modal-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:200;align-items:center;justify-content:center}
+.modal-backdrop.open{display:flex}
+.modal{background:#fff;border-radius:12px;padding:2rem;width:100%;max-width:500px;margin:1rem;max-height:90vh;overflow-y:auto;position:relative}
+.modal h2{font-size:1.1rem;font-weight:700;margin-bottom:.25rem}
+.modal .job-ref{font-size:13px;color:#666;margin-bottom:1.5rem}
+.modal-footer{display:flex;justify-content:flex-end;gap:.75rem;margin-top:1.5rem}
+.modal-close{position:absolute;top:1rem;right:1rem;background:none;border:none;font-size:20px;cursor:pointer;color:#666;line-height:1}
+
+/* DASHBOARD */
+.dash-layout{display:grid;grid-template-columns:200px 1fr;min-height:calc(100vh - 56px)}
+.dash-sidebar{background:#fff;border-right:1px solid #e0e0e0;padding:1.25rem 0;display:flex;flex-direction:column}
+.dash-sidebar-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#aaa;padding:0 1.25rem;margin-bottom:.5rem}
+.dash-nav-item{display:block;padding:8px 1.25rem;font-size:14px;cursor:pointer;color:#555;border:none;background:none;font-family:inherit;width:100%;text-align:left;border-left:3px solid transparent}
+.dash-nav-item:hover{background:#f5f5f5;color:#111}
+.dash-nav-item.active{color:#111;font-weight:600;border-left-color:#f5a623;background:#fffdf5}
+.dash-main{padding:2rem 1.5rem;overflow:auto}
+.dash-section{display:none}
+.dash-section.active{display:block}
+.stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:.75rem;margin-bottom:2rem}
+.stat-card{background:#fff;border:1px solid #e0e0e0;border-radius:10px;padding:1rem 1.25rem}
+.stat-card .label{font-size:12px;color:#888;margin-bottom:.25rem}
+.stat-card .value{font-size:1.8rem;font-weight:700}
+.dash-table{width:100%;border-collapse:collapse;font-size:13px;background:#fff;border-radius:10px;overflow:hidden;border:1px solid #e0e0e0}
+.dash-table th{text-align:left;padding:10px 14px;border-bottom:1px solid #e0e0e0;font-weight:600;color:#555;background:#fafafa}
+.dash-table td{padding:10px 14px;border-bottom:1px solid #f0f0f0;vertical-align:middle}
+.dash-table tr:last-child td{border-bottom:none}
+.dash-table tr:hover td{background:#fafafa}
+.badge{font-size:11px;padding:2px 8px;border-radius:20px;font-weight:600;white-space:nowrap}
+.badge-green{background:#e8f5e9;color:#2e7d32}
+.badge-gold{background:#fef3dc;color:#7a4f00}
+.badge-gray{background:#f3f4f6;color:#555}
+
+.login-wrap{max-width:360px;margin:5rem auto;padding:0 1.5rem}
+.login-box{background:#fff;border:1px solid #e0e0e0;border-radius:12px;padding:2rem}
+.login-box h2{font-size:1.1rem;font-weight:700;margin-bottom:.25rem}
+.login-box .hint{font-size:13px;color:#666;margin-bottom:1.5rem}
+
+@media(max-width:640px){
+  .dash-layout{grid-template-columns:1fr}
+  .dash-sidebar{flex-direction:row;flex-wrap:wrap;padding:.75rem;border-right:none;border-bottom:1px solid #e0e0e0;gap:.25rem}
+  .dash-sidebar-title{display:none}
+  .dash-nav-item{width:auto;border-left:none;border-radius:6px;padding:6px 10px;font-size:13px}
+  .dash-nav-item.active{border-left-color:transparent;background:#111;color:#fff}
+  .form-grid{grid-template-columns:1fr}.form-grid .full{grid-column:1}
+  .job-card{flex-direction:column}.job-actions{flex-direction:row;flex-wrap:wrap}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">Stars and Stripes Staffing</div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="show('home',0)">Home</button>
+    <button class="nav-tab" onclick="show('board',1)">Browse Jobs</button>
+    <button class="nav-tab" onclick="show('post',2)">Post a Job</button>
+    <button class="nav-tab" onclick="show('advertise',3)">Feature a Listing</button>
+    <button class="nav-tab admin-tab" onclick="showAdmin()">&#9881; Admin</button>
+  </div>
+</nav>
+
+<!-- HOME -->
+<div id="page-home" class="page active">
+  <div class="hero">
+    <h1>High School Internships,<br><span>Made Simple</span></h1>
+    <p>Stars and Stripes Staffing connects local employers with motivated high school students ready to learn and grow.</p>
+    <div class="hero-btns">
+      <button class="btn btn-gold" onclick="show('board',1)">Browse Internships</button>
+      <button class="btn btn-outline-white" onclick="show('post',2)">Post an Internship</button>
+    </div>
+  </div>
+  <div class="how-section">
+    <h2>How it works</h2>
+    <div class="how-grid">
+      <div class="how-card"><div class="step">Step 1 — Employers</div><h3>Post your opening</h3><p>Fill out a simple form with your internship details. Go live within 24 hours.</p></div>
+      <div class="how-card"><div class="step">Step 2 — Students</div><h3>Browse and apply</h3><p>High schoolers search listings, filter by industry or location, and submit an application in minutes.</p></div>
+      <div class="how-card"><div class="step">Step 3 — Connect</div><h3>Get in touch</h3><p>Employers receive applications and reach out directly to schedule interviews.</p></div>
+      <div class="how-card"><div class="step">Optional</div><h3>Get noticed faster</h3><p>Feature your listing at the top of the board to reach more students sooner.</p></div>
+    </div>
+  </div>
+  <div class="cta-strip">
+    <h2>Ready to find your next intern?</h2>
+    <p>Posting is free. Get your opening in front of students today.</p>
+    <button class="btn btn-primary" onclick="show('post',2)">Post a Job Now</button>
+  </div>
+</div>
+
+<!-- BROWSE -->
+<div id="page-board" class="page">
+  <div class="page-inner">
+    <h1>Open Internships</h1>
+    <p class="sub">For high school students. Click any listing to apply.</p>
+    <div class="toolbar">
+      <input type="text" id="search" placeholder="Search title or company..." oninput="renderBoard()">
+      <select id="filt-industry" onchange="renderBoard()"><option value="">All industries</option></select>
+      <select id="filt-type" onchange="renderBoard()">
+        <option value="">Any location type</option><option>In-person</option><option>Remote</option><option>Hybrid</option>
+      </select>
+    </div>
+    <div id="featured-section" style="display:none">
+      <div class="featured-label">Featured listings</div>
+      <div class="job-list" id="featured-list"></div>
+      <hr class="featured-divider">
+    </div>
+    <div class="job-list" id="job-list"><div class="empty">No listings yet. Check back soon!</div></div>
+  </div>
+</div>
+
+<!-- POST -->
+<div id="page-post" class="page">
+  <div class="page-inner">
+    <h1>Post an internship</h1>
+    <p class="sub">Fill in the details below to add a single listing.</p>
+    <div id="post-success" class="success-banner" style="margin-bottom:1rem"><p>Listing added to the board.</p></div>
+    <div class="post-form">
+      <div class="form-grid">
+        <div class="form-row"><label>Job title <span class="req">*</span></label><input type="text" id="p-title" placeholder="e.g. Marketing Intern"></div>
+        <div class="form-row"><label>Company <span class="req">*</span></label><input type="text" id="p-company" placeholder="e.g. Acme Corp"></div>
+        <div class="form-row"><label>Industry</label><input type="text" id="p-industry" placeholder="e.g. Technology"></div>
+        <div class="form-row"><label>Location type</label><select id="p-type"><option value="">—</option><option>In-person</option><option>Remote</option><option>Hybrid</option></select></div>
+        <div class="form-row"><label>Location</label><input type="text" id="p-location" placeholder="City, State"></div>
+        <div class="form-row"><label>Pay / compensation</label><input type="text" id="p-pay" placeholder="e.g. $15/hr, Unpaid"></div>
+        <div class="form-row"><label>Application deadline</label><input type="date" id="p-deadline"></div>
+        <div class="form-row"><label>Contact email</label><input type="email" id="p-email" placeholder="hr@company.com"></div>
+        <div class="form-row full"><label>Description</label><textarea id="p-desc" placeholder="What will the intern do? What will they learn?"></textarea></div>
+      </div>
+      <div class="error-msg" id="post-error">Please fill in title and company.</div>
+      <div style="margin-top:1rem"><button class="btn btn-primary" onclick="postJob()">Add to board</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- FEATURE A LISTING -->
+<div id="page-advertise" class="page">
+  <div class="page-inner">
+    <h1>Feature a listing</h1>
+    <p class="sub">Featured listings appear at the top of the board with a gold border, above all standard postings.</p>
+    <div class="import-box" style="max-width:600px;margin-bottom:1.25rem">
+      <h2>What you get</h2>
+      <ul style="font-size:14px;color:#444;line-height:2;margin-left:1.25rem;margin-top:.5rem">
+        <li>Pinned to the top of the job board</li>
+        <li>Gold highlighted border so students notice it first</li>
+        <li>"Featured" badge on your listing</li>
+        <li>Runs for the duration you choose</li>
+      </ul>
+    </div>
+    <div class="import-box" style="max-width:600px">
+      <h2>Request a featured spot</h2>
+      <p style="font-size:13px;color:#666;margin-bottom:1rem">Fill this out and we'll follow up with payment details within 24 hours.</p>
+      <div id="feat-success" class="success-banner" style="margin-bottom:1rem"><p>Request received! We'll be in touch within 24 hours.</p></div>
+      <div id="feat-form">
+        <div class="form-row"><label>Company name <span class="req">*</span></label><input type="text" id="f2-company" placeholder="e.g. Acme Corp"></div>
+        <div class="form-row"><label>Internship title to feature <span class="req">*</span></label><input type="text" id="f2-title" placeholder="e.g. Marketing Intern"></div>
+        <div class="form-row"><label>Your email <span class="req">*</span></label><input type="email" id="f2-email" placeholder="you@company.com"></div>
+        <div class="form-row"><label>How long?</label><select id="f2-duration"><option>1 week</option><option>2 weeks</option><option>1 month</option></select></div>
+        <div class="form-row"><label>Anything else?</label><textarea id="f2-notes" placeholder="Optional notes..."></textarea></div>
+        <div class="error-msg" id="feat-error">Please fill in all required fields.</div>
+        <div style="margin-top:1rem;display:flex;gap:.75rem;align-items:center">
+          <button class="btn btn-primary" onclick="submitFeature()">Send request</button>
+          <span style="font-size:13px;color:#888">We'll reply within 24 hours with pricing.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN LOGIN -->
+<div id="page-login" class="page">
+  <div class="login-wrap">
+    <div class="login-box">
+      <h2>Admin login</h2>
+      <p class="hint">Enter your password to access the dashboard.</p>
+      <div class="form-row"><label>Password</label><input type="password" id="login-pw" placeholder="Password" onkeydown="if(event.key==='Enter')doLogin()"></div>
+      <div class="error-msg" id="login-error">Incorrect password.</div>
+      <div style="margin-top:1rem"><button class="btn btn-primary" onclick="doLogin()">Log in</button></div>
+      <p style="font-size:12px;color:#bbb;margin-top:1rem">Default password: Atty4824 — change before going live.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN DASHBOARD -->
+<div id="page-dashboard" class="page">
+  <div class="dash-layout">
+    <div class="dash-sidebar">
+      <div class="dash-sidebar-title">Dashboard</div>
+      <button class="dash-nav-item active" onclick="dashTab('overview',this)">Overview</button>
+      <button class="dash-nav-item" onclick="dashTab('listings',this)">All Listings</button>
+      <button class="dash-nav-item" onclick="dashTab('featured-req',this)">Feature Requests</button>
+      <button class="dash-nav-item" onclick="dashTab('applications',this)">Applications</button>
+      <button class="dash-nav-item" onclick="dashTab('import-admin',this)">Import Jobs</button>
+      <div style="flex:1"></div>
+      <div style="padding:.75rem 1rem;border-top:1px solid #e0e0e0">
+        <button class="btn btn-sm btn-danger" onclick="doLogout()" style="width:100%">Log out</button>
+      </div>
+    </div>
+
+    <div class="dash-main">
+
+      <div class="dash-section active" id="dash-overview">
+        <h1 style="margin-bottom:1.5rem">Overview</h1>
+        <div class="stat-row">
+          <div class="stat-card"><div class="label">Total listings</div><div class="value" id="stat-total">0</div></div>
+          <div class="stat-card"><div class="label">Featured</div><div class="value" id="stat-featured">0</div></div>
+          <div class="stat-card"><div class="label">Applications</div><div class="value" id="stat-apps">0</div></div>
+          <div class="stat-card"><div class="label">Feature requests</div><div class="value" id="stat-freq">0</div></div>
+        </div>
+        <h2 style="font-size:1rem;font-weight:700;margin-bottom:.75rem">Recent listings</h2>
+        <table class="dash-table">
+          <thead><tr><th>Title</th><th>Company</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="overview-tbody"><tr><td colspan="4" style="text-align:center;color:#aaa;padding:1.5rem">No listings yet.</td></tr></tbody>
+        </table>
+      </div>
+
+      <div class="dash-section" id="dash-listings">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:.75rem">
+          <h1>All listings</h1>
+          <button class="btn btn-primary btn-sm" onclick="show('post',2)">+ Add listing</button>
+        </div>
+        <div id="listings-empty" class="empty">No listings yet.</div>
+        <table class="dash-table" id="listings-table" style="display:none">
+          <thead><tr><th>Title</th><th>Company</th><th>Industry</th><th>Type</th><th>Featured</th><th>Actions</th></tr></thead>
+          <tbody id="listings-tbody"></tbody>
+        </table>
+      </div>
+
+      <div class="dash-section" id="dash-featured-req">
+        <h1 style="margin-bottom:1.5rem">Feature requests</h1>
+        <div id="freq-empty" class="empty">No feature requests yet.</div>
+        <table class="dash-table" id="freq-table" style="display:none">
+          <thead><tr><th>Company</th><th>Listing</th><th>Email</th><th>Duration</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="freq-tbody"></tbody>
+        </table>
+      </div>
+
+      <div class="dash-section" id="dash-applications">
+        <h1 style="margin-bottom:1.5rem">Applications</h1>
+        <div id="apps-empty" class="empty">No applications yet.</div>
+        <table class="dash-table" id="apps-table" style="display:none">
+          <thead><tr><th>Name</th><th>Email</th><th>School</th><th>Grade</th><th>Applied for</th></tr></thead>
+          <tbody id="apps-tbody"></tbody>
+        </table>
+      </div>
+
+      <div class="dash-section" id="dash-import-admin">
+        <h1 style="margin-bottom:1.5rem">Import job listings</h1>
+        <div class="import-box">
+          <h2>Upload CSV</h2>
+          <div class="file-drop" id="drop-zone2" onclick="document.getElementById('csv-file2').click()">
+            <input type="file" id="csv-file2" accept=".csv" onchange="handleCSV2(this.files[0])">
+            Click to select a CSV file, or drag and drop here
+          </div>
+          <p class="csv-hint">Required: <strong>title, company</strong> — Optional: industry, location_type, location, pay, deadline, description</p>
+          <div id="import-preview2"></div>
+          <div id="import-actions2" style="display:none;gap:.75rem;align-items:center;margin-top:1rem">
+            <button class="btn btn-primary" onclick="importJobs2()">Import listings</button>
+            <button class="btn" onclick="clearPreview2()">Cancel</button>
+            <span id="import-count2" style="font-size:13px;color:#555"></span>
+          </div>
+          <div id="import-success2" class="success-banner"><p>Listings imported successfully.</p></div>
+        </div>
+        <div class="import-box">
+          <h2>CSV template</h2>
+          <p style="font-size:13px;color:#555;margin-bottom:.75rem">Download and fill in with your job data.</p>
+          <button class="btn btn-sm" onclick="downloadTemplate()">Download template.csv</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- APPLICATION MODAL -->
+<div class="modal-backdrop" id="apply-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">&#x2715;</button>
+    <h2 id="modal-title">Apply</h2>
+    <p class="job-ref" id="modal-company"></p>
+    <div class="form-row"><label>Full name <span class="req">*</span></label><input type="text" id="a-name" placeholder="Your name"></div>
+    <div class="form-row"><label>Email <span class="req">*</span></label><input type="email" id="a-email" placeholder="your@email.com"></div>
+    <div class="form-row"><label>School name</label><input type="text" id="a-school" placeholder="e.g. Lincoln High School"></div>
+    <div class="form-row"><label>Grade level</label><select id="a-grade"><option value="">—</option><option>9th grade</option><option>10th grade</option><option>11th grade</option><option>12th grade</option></select></div>
+    <div class="form-row"><label>Why are you interested?</label><textarea id="a-why" placeholder="A few sentences is fine..."></textarea></div>
+    <div class="error-msg" id="apply-error" style="display:none">Please fill in name and email.</div>
+    <div id="apply-success" class="success-banner"><p>Application submitted! The employer will be in touch.</p></div>
+    <div class="modal-footer" id="apply-footer">
+      <button class="btn" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="submitApp()">Submit application</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const ADMIN_PW = 'Atty4824';
+let jobs=[], applications=[], featureRequests=[], featuredIdxs=new Set(), pendingImport=[], pendingImport2=[], currentJobIdx=null, loggedIn=false;
+
+function show(page, tabIdx) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  if(tabIdx!==undefined) document.querySelectorAll('.nav-tab')[tabIdx].classList.add('active');
+  if(page==='board') renderBoard();
+  window.scrollTo(0,0);
+}
+
+function showAdmin() {
+  if(loggedIn){openDashboard();}else{
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+    document.getElementById('page-login').classList.add('active');
+    document.getElementById('login-pw').value='';
+    document.getElementById('login-error').style.display='none';
+    window.scrollTo(0,0);
+  }
+}
+
+function doLogin() {
+  if(document.getElementById('login-pw').value===ADMIN_PW){loggedIn=true;openDashboard();}
+  else{document.getElementById('login-error').style.display='block';}
+}
+
+function doLogout(){loggedIn=false;show('home',0);}
+
+function openDashboard(){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-dashboard').classList.add('active');
+  const firstBtn=document.querySelector('.dash-nav-item');
+  document.querySelectorAll('.dash-nav-item').forEach(n=>n.classList.remove('active'));
+  firstBtn.classList.add('active');
+  document.querySelectorAll('.dash-section').forEach(s=>s.classList.remove('active'));
+  document.getElementById('dash-overview').classList.add('active');
+  renderOverview();
+  window.scrollTo(0,0);
+}
+
+function dashTab(tab, btn) {
+  document.querySelectorAll('.dash-section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.dash-nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('dash-'+tab).classList.add('active');
+  if(btn) btn.classList.add('active');
+  if(tab==='overview') renderOverview();
+  if(tab==='listings') renderListings();
+  if(tab==='featured-req') renderFeatReqs();
+  if(tab==='applications') renderApplications();
+}
+
+/* BOARD */
+function renderBoard(){
+  const q=document.getElementById('search').value.toLowerCase();
+  const ind=document.getElementById('filt-industry').value;
+  const typ=document.getElementById('filt-type').value;
+  const featured=jobs.filter((j,i)=>featuredIdxs.has(i)&&matchJob(j,q,ind,typ));
+  const regular=jobs.filter((j,i)=>!featuredIdxs.has(i)&&matchJob(j,q,ind,typ));
+  const featSec=document.getElementById('featured-section');
+  if(featured.length){featSec.style.display='block';document.getElementById('featured-list').innerHTML=featured.map(j=>jobCardHTML(jobs.indexOf(j),true)).join('');}
+  else featSec.style.display='none';
+  const el=document.getElementById('job-list');
+  el.innerHTML=(!regular.length&&!featured.length)?'<div class="empty">'+(jobs.length?'No listings match your filters.':'No listings yet. Check back soon!')+'</div>':regular.map(j=>jobCardHTML(jobs.indexOf(j),false)).join('');
+}
+
+function matchJob(j,q,ind,typ){return(!q||(j.title+j.company).toLowerCase().includes(q))&&(!ind||j.industry===ind)&&(!typ||j.location_type===typ);}
+
+function jobCardHTML(idx,isFeatured){
+  const j=jobs[idx];
+  const tags=[j.location_type,j.industry,j.pay,j.location].filter(Boolean);
+  return`<div class="job-card${isFeatured?' featured':''}">
+    <div class="job-body">
+      <div class="job-title">${esc(j.title)}${isFeatured?'<span class="featured-badge">Featured</span>':''}</div>
+      <div class="job-company">${esc(j.company)}</div>
+      <div class="job-tags">${tags.map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div>
+      ${j.description?`<p style="font-size:13px;color:#555;margin-top:.6rem;line-height:1.5">${esc(j.description)}</p>`:''}
+    </div>
+    <div class="job-actions">
+      ${j.deadline?`<span class="deadline">Due ${esc(j.deadline)}</span>`:''}
+      <button class="btn btn-primary btn-sm" onclick="openModal(${idx})">Apply</button>
+    </div>
+  </div>`;
+}
+
+function rebuildIndustryFilter(){
+  const sel=document.getElementById('filt-industry'),cur=sel.value;
+  const inds=[...new Set(jobs.map(j=>j.industry).filter(Boolean))].sort();
+  sel.innerHTML='<option value="">All industries</option>'+inds.map(i=>`<option${i===cur?' selected':''}>${esc(i)}</option>`).join('');
+}
+
+/* DASHBOARD */
+function renderOverview(){
+  document.getElementById('stat-total').textContent=jobs.length;
+  document.getElementById('stat-featured').textContent=featuredIdxs.size;
+  document.getElementById('stat-apps').textContent=applications.length;
+  document.getElementById('stat-freq').textContent=featureRequests.length;
+  const tbody=document.getElementById('overview-tbody');
+  if(!jobs.length){tbody.innerHTML='<tr><td colspan="4" style="text-align:center;color:#aaa;padding:1.5rem">No listings yet.</td></tr>';return;}
+  tbody.innerHTML=jobs.slice().reverse().slice(0,8).map((j,ri)=>{
+    const idx=jobs.length-1-ri,isFeat=featuredIdxs.has(idx);
+    return`<tr><td>${esc(j.title)}</td><td>${esc(j.company)}</td>
+      <td>${isFeat?'<span class="badge badge-gold">Featured</span>':'<span class="badge badge-gray">Standard</span>'}</td>
+      <td style="display:flex;gap:.4rem;flex-wrap:wrap">
+        <button class="btn btn-sm" onclick="${isFeat?'unfeature':'feature'}Job(${idx})">${isFeat?'Unfeature':'Feature'}</button>
+        <button class="btn btn-sm btn-danger" onclick="removeJob(${idx})">Remove</button>
+      </td></tr>`;
+  }).join('');
+}
+
+function renderListings(){
+  const tbody=document.getElementById('listings-tbody'),empty=document.getElementById('listings-empty'),tbl=document.getElementById('listings-table');
+  if(!jobs.length){empty.style.display='block';tbl.style.display='none';return;}
+  empty.style.display='none';tbl.style.display='table';
+  tbody.innerHTML=jobs.map((j,idx)=>{
+    const isFeat=featuredIdxs.has(idx);
+    return`<tr><td>${esc(j.title)}</td><td>${esc(j.company)}</td><td>${esc(j.industry||'—')}</td><td>${esc(j.location_type||'—')}</td>
+      <td>${isFeat?'<span class="badge badge-gold">Yes</span>':'<span class="badge badge-gray">No</span>'}</td>
+      <td style="display:flex;gap:.4rem;flex-wrap:wrap">
+        <button class="btn btn-sm" onclick="${isFeat?'unfeature':'feature'}Job(${idx})">${isFeat?'Unfeature':'Feature'}</button>
+        <button class="btn btn-sm btn-danger" onclick="removeJob(${idx})">Remove</button>
+      </td></tr>`;
+  }).join('');
+}
+
+function renderFeatReqs(){
+  const tbody=document.getElementById('freq-tbody'),empty=document.getElementById('freq-empty'),tbl=document.getElementById('freq-table');
+  if(!featureRequests.length){empty.style.display='block';tbl.style.display='none';return;}
+  empty.style.display='none';tbl.style.display='table';
+  tbody.innerHTML=featureRequests.map((r,i)=>`<tr>
+    <td>${esc(r.company)}</td><td>${esc(r.title)}</td><td>${esc(r.email)}</td><td>${esc(r.duration)}</td>
+    <td><span class="badge ${r.approved?'badge-green':'badge-gray'}">${r.approved?'Approved':'Pending'}</span></td>
+    <td style="display:flex;gap:.4rem;flex-wrap:wrap">
+      ${!r.approved?`<button class="btn btn-sm btn-gold" onclick="approveReq(${i})">Approve</button>`:''}
+      <button class="btn btn-sm btn-danger" onclick="deleteReq(${i})">Delete</button>
+    </td></tr>`).join('');
+}
+
+function renderApplications(){
+  const tbody=document.getElementById('apps-tbody'),empty=document.getElementById('apps-empty'),tbl=document.getElementById('apps-table');
+  if(!applications.length){empty.style.display='block';tbl.style.display='none';return;}
+  empty.style.display='none';tbl.style.display='table';
+  tbody.innerHTML=applications.map(a=>`<tr>
+    <td>${esc(a.name)}</td><td>${esc(a.email)}</td><td>${esc(a.school||'—')}</td><td>${esc(a.grade||'—')}</td>
+    <td>${esc(a.jobTitle)} @ ${esc(a.company)}</td></tr>`).join('');
+}
+
+/* JOB ACTIONS */
+function featureJob(idx){featuredIdxs.add(idx);refresh();}
+function unfeatureJob(idx){featuredIdxs.delete(idx);refresh();}
+function removeJob(idx){
+  if(!confirm('Remove this listing?'))return;
+  const newFeat=new Set();
+  featuredIdxs.forEach(i=>{if(i<idx)newFeat.add(i);else if(i>idx)newFeat.add(i-1);});
+  featuredIdxs=newFeat;jobs.splice(idx,1);refresh();
+}
+function refresh(){rebuildIndustryFilter();renderBoard();renderOverview();renderListings();}
+
+/* FEATURE REQUESTS */
+function submitFeature(){
+  const company=document.getElementById('f2-company').value.trim(),title=document.getElementById('f2-title').value.trim(),email=document.getElementById('f2-email').value.trim();
+  if(!company||!title||!email){document.getElementById('feat-error').style.display='block';return;}
+  document.getElementById('feat-error').style.display='none';
+  featureRequests.push({company,title,email,duration:document.getElementById('f2-duration').value,notes:document.getElementById('f2-notes').value,approved:false});
+  document.getElementById('feat-form').style.display='none';
+  document.getElementById('feat-success').style.display='block';
+}
+function approveReq(i){featureRequests[i].approved=true;renderFeatReqs();renderOverview();}
+function deleteReq(i){featureRequests.splice(i,1);renderFeatReqs();renderOverview();}
+
+/* APPLICATIONS */
+function openModal(idx){
+  currentJobIdx=idx;const j=jobs[idx];
+  document.getElementById('modal-title').textContent='Apply — '+j.title;
+  document.getElementById('modal-company').textContent=j.company+(j.location?' · '+j.location:'');
+  ['a-name','a-email','a-school','a-grade','a-why'].forEach(id=>{const el=document.getElementById(id);if(el.tagName==='SELECT')el.selectedIndex=0;else el.value='';});
+  document.getElementById('apply-error').style.display='none';
+  document.getElementById('apply-success').style.display='none';
+  document.getElementById('apply-footer').style.display='flex';
+  document.getElementById('apply-modal').classList.add('open');
+}
+function closeModal(){document.getElementById('apply-modal').classList.remove('open');}
+function submitApp(){
+  const name=document.getElementById('a-name').value.trim(),email=document.getElementById('a-email').value.trim();
+  if(!name||!email){document.getElementById('apply-error').style.display='block';return;}
+  document.getElementById('apply-error').style.display='none';
+  const j=jobs[currentJobIdx];
+  applications.push({name,email,school:document.getElementById('a-school').value.trim(),grade:document.getElementById('a-grade').value,jobTitle:j.title,company:j.company});
+  document.getElementById('apply-footer').style.display='none';
+  document.getElementById('apply-success').style.display='block';
+}
+
+/* POST JOB */
+function postJob(){
+  const title=document.getElementById('p-title').value.trim(),company=document.getElementById('p-company').value.trim();
+  if(!title||!company){document.getElementById('post-error').style.display='block';return;}
+  document.getElementById('post-error').style.display='none';
+  jobs.push({title,company,industry:document.getElementById('p-industry').value.trim(),location_type:document.getElementById('p-type').value,location:document.getElementById('p-location').value.trim(),pay:document.getElementById('p-pay').value.trim(),deadline:document.getElementById('p-deadline').value,email:document.getElementById('p-email').value.trim(),description:document.getElementById('p-desc').value.trim()});
+  rebuildIndustryFilter();
+  ['p-title','p-company','p-industry','p-location','p-pay','p-deadline','p-email','p-desc'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('p-type').selectedIndex=0;
+  const s=document.getElementById('post-success');s.style.display='block';setTimeout(()=>s.style.display='none',3000);
+}
+
+/* CSV */
+function handleCSV(file){if(!file)return;const r=new FileReader();r.onload=e=>{const rows=parseCSV(e.target.result);if(!rows.length){alert('No valid data.');return;}pendingImport=rows;showPreview(rows,'import-preview','import-actions','import-count');};r.readAsText(file);}
+function importJobs(){jobs=[...jobs,...pendingImport];rebuildIndustryFilter();clearPreview();const s=document.getElementById('import-success');s.style.display='block';setTimeout(()=>s.style.display='none',3000);}
+function clearPreview(){pendingImport=[];document.getElementById('import-preview').innerHTML='';document.getElementById('import-actions').style.display='none';document.getElementById('csv-file').value='';}
+
+function handleCSV2(file){if(!file)return;const r=new FileReader();r.onload=e=>{const rows=parseCSV(e.target.result);if(!rows.length){alert('No valid data.');return;}pendingImport2=rows;showPreview(rows,'import-preview2','import-actions2','import-count2');};r.readAsText(file);}
+function importJobs2(){jobs=[...jobs,...pendingImport2];rebuildIndustryFilter();clearPreview2();refresh();const s=document.getElementById('import-success2');s.style.display='block';setTimeout(()=>s.style.display='none',3000);}
+function clearPreview2(){pendingImport2=[];document.getElementById('import-preview2').innerHTML='';document.getElementById('import-actions2').style.display='none';document.getElementById('csv-file2').value='';}
+
+function parseCSV(text){const lines=text.trim().split('\n');if(lines.length<2)return[];const headers=lines[0].split(',').map(h=>h.trim().replace(/^"|"$/g,'').toLowerCase().replace(/ /g,'_'));return lines.slice(1).filter(l=>l.trim()).map(line=>{const vals=splitCSVLine(line);const obj={};headers.forEach((h,i)=>{obj[h]=(vals[i]||'').trim().replace(/^"|"$/g,'');});return obj;}).filter(r=>r.title&&r.company);}
+function splitCSVLine(line){const result=[];let cur='',inQ=false;for(let i=0;i<line.length;i++){const c=line[i];if(c==='"'){inQ=!inQ;}else if(c===','&&!inQ){result.push(cur);cur='';}else cur+=c;}result.push(cur);return result;}
+function showPreview(rows,pId,aId,cId){
+  const cols=['title','company','industry','location_type','location','pay','deadline'];
+  document.getElementById(pId).innerHTML=`<table class="preview-table"><tr>${cols.map(c=>`<th>${c}</th>`).join('')}</tr>${rows.slice(0,5).map(r=>`<tr>${cols.map(c=>`<td>${esc(r[c]||'')}</td>`).join('')}</tr>`).join('')}${rows.length>5?`<tr><td colspan="${cols.length}" style="color:#888;font-style:italic">...and ${rows.length-5} more rows</td></tr>`:''}</table>`;
+  document.getElementById(cId).textContent=rows.length+' listing'+(rows.length!==1?'s':'')+' ready to import';
+  document.getElementById(aId).style.display='flex';
+}
+
+function downloadTemplate(){const csv='title,company,industry,location_type,location,pay,deadline,description\n"Marketing Intern","Acme Corp","Marketing","Remote","","Unpaid","2025-06-01","Help with social media."';const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);a.download='internship-template.csv';a.click();}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+['drop-zone','drop-zone2'].forEach((id,n)=>{const el=document.getElementById(id);if(!el)return;el.addEventListener('dragover',e=>{e.preventDefault();el.style.borderColor='#555';});el.addEventListener('dragleave',()=>{el.style.borderColor='#d0d0d0';});el.addEventListener('drop',e=>{e.preventDefault();el.style.borderColor='#d0d0d0';const f=e.dataTransfer.files[0];if(f){n===0?handleCSV(f):handleCSV2(f);}});});
+document.getElementById('apply-modal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeModal();});
+</script>
+</body>
+</html>
